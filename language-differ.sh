@@ -8,7 +8,7 @@
 # - to-branch:		The branch that should receive the translations
 # - from-branch:	Branch to get translations from
 
-set -e
+#set -e
 
 BASE_BRANCH=master
 BACKPORT_BRANCH=$1
@@ -17,13 +17,15 @@ if [ "$2" ]; then
 	BASE_BRANCH=$2
 fi
 
-L10N_FILES=$(git diff "$BACKPORT_BRANCH..$BASE_BRANCH" --name-status | grep "/l10n/" | grep ".json$" | grep "^M" | sed -e 's/M//g')
+L10N_FILES=$(git diff "origin/$BACKPORT_BRANCH..origin/$BASE_BRANCH" --name-status | grep "/l10n/" | grep ".json$" | grep "^M" | sed -e 's/^M//g')
+echo "Analysing $L10N_FILES"
 
 JSON_DELIMITER="\" : \""
 L10N_DELIMITER="\/l10n\/"
 for L10N_FILE in $L10N_FILES
 do
-	CHANGED_STRINGS=$(git diff "$BACKPORT_BRANCH..$BASE_BRANCH" "$L10N_FILE" | grep "^+    \"")
+    echo "Analysing $L10N_FILE"
+	CHANGED_STRINGS=$(git diff "origin/$BACKPORT_BRANCH..origin/$BASE_BRANCH" "$L10N_FILE" | grep "^+    \"")
 	L10N_PATH=($(echo $L10N_FILE | sed -e 's/'"$L10N_DELIMITER"'/\n/g' | while read line; do echo $line; done))
 	L10N_FOLDER="${L10N_PATH[0]}"
 
