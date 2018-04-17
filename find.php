@@ -134,6 +134,8 @@ if (!$lines) {
     die;
 }
 
+$total_files = 0;
+
 foreach ($lines as $line_num => $line) {
     // Comma should only split into two as we might have commas inside string
     $strings_tmp[] = explode(",", $line, 2);
@@ -161,7 +163,8 @@ foreach ($stripped as $index => $param) {
                 echo_nl2br("\nSearch for: \"" . mb_substr($string, 0, 50) . "[...]\" in \"$dir\", file \"$file\"\n");
                 while ($rec = fgets($fp)) {
                     // check to see if the line contains the string
-                    if (preg_match("/\b" . preg_quote($string, '/') . "\b/", $rec) > 0) {
+//                    if (preg_match("/\b" . preg_quote($string, '/') . "\b/", $rec) > 0) {
+                    if (strpos($rec, "\"{$string}\"") !== FALSE) {
                         // if so copy the whole line into copy_strings file
                         echo_nl2br("<green>=> Found \"" . mb_substr($string, 0, 50) . "[...]\" in file \"$file\". Queuing for copying. The full line is: $rec</close>");
                         $total_files++;
